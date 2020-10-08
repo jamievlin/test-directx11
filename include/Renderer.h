@@ -7,7 +7,8 @@
 
 using winrt::com_ptr;
 
-class Renderer {
+class Renderer
+{
 public:
     Renderer();
     ~Renderer();

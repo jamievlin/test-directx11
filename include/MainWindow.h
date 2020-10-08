@@ -3,7 +3,8 @@
 #include <string>
 #include "Renderer.h"
 
-class MainWindow {
+class MainWindow
+{
 public:
     static LRESULT CALLBACK stWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 

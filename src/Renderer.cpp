@@ -13,15 +13,18 @@ std::string const SHADER_DIR = "./"
 using common::throwIfFailed;
 
 Renderer::Renderer() :
-    mHwnd(NULL), totalTime(0.f), redval(0.f) {
+    mHwnd(NULL), totalTime(0.f), redval(0.f)
+{
 
 }
 
-Renderer::~Renderer() {
+Renderer::~Renderer()
+{
 
 }
 
-void Renderer::initialize(HWND hwnd) {
+void Renderer::initialize(HWND hwnd)
+{
     mHwnd = hwnd;
     D3D_FEATURE_LEVEL levels[] = {
         D3D_FEATURE_LEVEL_11_1,
@@ -85,7 +88,8 @@ void Renderer::initialize(HWND hwnd) {
     loadShader();
 }
 
-void Renderer::loadShader() {
+void Renderer::loadShader()
+{
     std::string shaderDir;
     D3D11_INPUT_ELEMENT_DESC const basicVertLayoutDesc[] = {
         {"VTX_INPUT", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
@@ -98,14 +102,15 @@ void Renderer::loadShader() {
     Shaders::createPixelShader(this->device, SHADER_DIR + "/ps.cso").copy_to(pxlShader.put());
 }
 
-void Renderer::updateLoop(float deltaTime) {
+void Renderer::updateLoop(float deltaTime)
+{
     totalTime += deltaTime;
     redval = 0.5 + (0.5 * std::sin(0.001 * totalTime));
 
     vrtBuffer = nullptr;
     idxBuffer = nullptr;
 
-    std::vector<float> triangleVerts {
+    std::vector<float> triangleVerts{
         -0.5f, -0.5f,
         0.5f, redval,
         0.5f, -0.5f
@@ -147,7 +152,8 @@ void Renderer::updateLoop(float deltaTime) {
     throwIfFailed(device->CreateBuffer(&idxBufDsc, &idxBufDat, idxBuffer.put()));
 }
 
-void Renderer::drawFrame() {
+void Renderer::drawFrame()
+{
     ID3D11RenderTargetView* renderTargViews[] = { renderTarget.get() };
     context->OMSetRenderTargets(ARRAYSIZE(renderTargViews), renderTargViews, nullptr);
 
@@ -155,7 +161,6 @@ void Renderer::drawFrame() {
     context->ClearRenderTargetView(renderTarget.get(), clearColor);
 
     context->IASetInputLayout(inputLayout.get());
-
 
     uint32_t stride = sizeof(float);
     uint32_t offset = 0;
@@ -172,7 +177,5 @@ void Renderer::drawFrame() {
 
     context->DrawIndexed(3, 0, 0);
 
-    
-    
     throwIfFailed(swapChain->Present(1, 0));
 }

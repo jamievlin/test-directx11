@@ -9,32 +9,42 @@
 MainWindow::MainWindow() :
     className(MainWindowNames::WIN_CLASS_NAME), windowName(MainWindowNames::WIN_TITLE_NAME),
     winHeight(MainWindowNames::WIN_HEIGHT), winWidth(MainWindowNames::WIN_WIDTH),
-    mHwnd(NULL), renderer() {
+    mHwnd(NULL), renderer()
+{
 
 }
-MainWindow::~MainWindow() {
+MainWindow::~MainWindow()
+{
 
 }
 
-LRESULT CALLBACK MainWindow::stWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK MainWindow::stWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
     MainWindow* pThis = nullptr;
-    if (uMsg == WM_NCCREATE) {
+    if (uMsg == WM_NCCREATE)
+    {
         CREATESTRUCT* createSt = (CREATESTRUCT*)lParam;
         pThis = (MainWindow*)createSt->lpCreateParams;
         SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pThis);
         pThis->mHwnd = hwnd;
-    } else {
+    }
+    else
+    {
         pThis = (MainWindow*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
     }
 
-    if (pThis) {
+    if (pThis)
+    {
         return pThis->handleMsg(uMsg, wParam, lParam);
-    } else {
+    }
+    else
+    {
         return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
 }
 
-BOOL MainWindow::create() {
+BOOL MainWindow::create()
+{
     WNDCLASS wc = {};
     wc.lpfnWndProc = this->stWindowProc;
     wc.hInstance = GetModuleHandle(NULL);
@@ -42,25 +52,29 @@ BOOL MainWindow::create() {
 
     RegisterClass(&wc);
 
-    HWND hwnd = CreateWindowEx(
-        0, (PCWSTR)className.c_str(), (PCWSTR)windowName.c_str(), WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZE,
+    HWND hwnd = CreateWindowEx(0, (PCWSTR)className.c_str(), (PCWSTR)windowName.c_str(),
+        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZE,
         CW_USEDEFAULT, CW_USEDEFAULT, winHeight, winWidth,
         NULL, NULL, GetModuleHandle(NULL), this);
 
     return hwnd ? TRUE : FALSE;
 }
 
-void MainWindow::initialize() {
+void MainWindow::initialize()
+{
     renderer.initialize(Window());
 }
 
-HWND MainWindow::Window() const {
+HWND MainWindow::Window() const
+{
     return this->mHwnd;
 }
 #pragma endregion
 
-LRESULT MainWindow::handleMsg(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    switch (uMsg) {
+LRESULT MainWindow::handleMsg(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg)
+    {
     case WM_WINDOWPOSCHANGING: {
         WINDOWPOS* wPos = (WINDOWPOS*)(lParam);
         wPos->flags |= SWP_NOSIZE;
@@ -81,15 +95,18 @@ LRESULT MainWindow::handleMsg(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     return DefWindowProcW(mHwnd, uMsg, wParam, lParam);
 }
 
-int MainWindow::run() {
+int MainWindow::run()
+{
     MSG msg = {};
     msg.message = WM_NULL;
     PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE);
 
     auto lastTime = std::chrono::high_resolution_clock::now();
 
-    while (msg.message != WM_QUIT) {
-        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) != 0) {
+    while (msg.message != WM_QUIT)
+    {
+        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) != 0)
+        {
             TranslateMessage(&msg);
             DispatchMessageW(&msg);
         }

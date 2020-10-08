@@ -2,7 +2,8 @@
 #include <Windows.h>
 #include <string>
 
-namespace MainWindowNames {
+namespace MainWindowNames
+{
     std::wstring const WIN_CLASS_NAME = L"Hello";
     std::wstring const WIN_TITLE_NAME = L"Test DirectX";
     UINT const WIN_WIDTH = 1000;
