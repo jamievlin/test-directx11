@@ -61,7 +61,7 @@ void Renderer::initialize(HWND hwnd)
     winrt::com_ptr<IDXGIDevice3> dxgi_dev = device.as<IDXGIDevice3>();
     winrt::com_ptr<IDXGIAdapter> adap;
     winrt::com_ptr<IDXGIFactory> fact;
-    
+
     throwIfFailed(dxgi_dev->GetAdapter(adap.put()));
     adap->GetParent(__uuidof(fact), fact.put_void());
 
@@ -96,9 +96,9 @@ void Renderer::loadShader()
     };
 
     Shaders::createVertexShaderAndInputLayout(
-        this->device, SHADER_DIR + "/vs.cso", basicVertLayoutDesc, 
+        this->device, SHADER_DIR + "/vs.cso", basicVertLayoutDesc,
         ARRAYSIZE(basicVertLayoutDesc), inputLayout
-        ).copy_to(vtxShader.put());
+    ).copy_to(vtxShader.put());
     Shaders::createPixelShader(this->device, SHADER_DIR + "/ps.cso").copy_to(pxlShader.put());
 }
 
@@ -154,28 +154,33 @@ void Renderer::updateLoop(float deltaTime)
 
 void Renderer::drawFrame()
 {
+    // set render targets
     ID3D11RenderTargetView* renderTargViews[] = { renderTarget.get() };
     context->OMSetRenderTargets(ARRAYSIZE(renderTargViews), renderTargViews, nullptr);
 
+    // clear color
     float const clearColor[4] = { 0.f, 0.0f, 0.f, 1.f };
     context->ClearRenderTargetView(renderTarget.get(), clearColor);
 
+    // set shader input layout format
     context->IASetInputLayout(inputLayout.get());
 
+    // set buffers
     uint32_t stride = sizeof(float);
     uint32_t offset = 0;
-
     ID3D11Buffer* vrtBuffers[] = { vrtBuffer.get() };
-
     context->IASetVertexBuffers(0, ARRAYSIZE(vrtBuffers), vrtBuffers, &stride, &offset);
     context->IASetIndexBuffer(idxBuffer.get(), DXGI_FORMAT_R16_UINT, 0);
 
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+    // set shaders
     context->VSSetShader(vtxShader.get(), nullptr, 0);
     context->PSSetShader(pxlShader.get(), nullptr, 0);
 
+    // draw object
     context->DrawIndexed(3, 0, 0);
 
+    // present the rendered iamge
     throwIfFailed(swapChain->Present(1, 0));
 }
